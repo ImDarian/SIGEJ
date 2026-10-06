@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIGEJ · Sistema de Información y Gestión de Expedientes Judiciales</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#f6f8f8;--card:#fff;--tx:#1f2d33;--mut:#5b6d74;--side:#245a64;--side2:#3e7f8c;--ln:#d6e0e2;--civil:#fdd95a;--civil-d:#b98a0c;--intra:#ffa8bc;--intra-d:#b34763;--penal:#8fd0f0;--penal-d:#26759c;--exhib:#fff;--exhib-d:#8a7a66;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12191c;--card:#1b262a;--tx:#e8f0f2;--mut:#9fb2b8;--side:#0f3239;--side2:#1d4c56;--ln:#2c3b41}}
+:root[data-theme="dark"]{--bg:#12191c;--card:#1b262a;--tx:#e8f0f2;--mut:#9fb2b8;--side:#0f3239;--side2:#1d4c56;--ln:#2c3b41}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:clamp(15px,.55vw + 9px,18px)/1.45 Lexend,system-ui,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.civil{--c:var(--civil);--d:var(--civil-d)}.familiar{--c:var(--intra);--d:var(--intra-d)}.exhib{--c:var(--exhib);--d:var(--exhib-d)}.row.exhib,.det.exhib{box-shadow:inset 0 0 0 2px var(--d)}.penal{--c:var(--penal);--d:var(--penal-d)}
+aside{font-size:15px;position:fixed;top:0;bottom:0;left:0;width:64px;background:var(--side);color:#fff;display:flex;flex-direction:column;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 8px calc(10px + env(safe-area-inset-bottom,0px));transition:width .25s ease;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;z-index:5;box-shadow:2px 0 14px #0003}
+aside.open,aside:has(:focus-visible){width:262px}
+@media(hover:hover){aside:hover{width:262px}}
+nav{display:flex;flex-direction:column;gap:8px;margin-top:48px}
+.nv{display:flex;align-items:center;gap:14px;width:100%;padding:12px;border:0;border-radius:12px;background:var(--side2);color:#fff;font-weight:600;white-space:nowrap;text-align:left}
+.nv svg{flex:none}.nv.on{background:#a9cdd4;color:#12343b}.nv.add{background:#fdd95a;color:#1f2d33}
+.lb,.brand small{opacity:0;transition:opacity .2s}
+aside.open .lb,aside.open small,aside:has(:focus-visible) .lb{opacity:1}
+@media(hover:hover){aside:hover .lb,aside:hover small{opacity:1}}
+.brand{background:none;border:0;color:#fff;text-align:left;padding:0;white-space:nowrap;display:flex;align-items:flex-start;gap:10px;height:81px}
+.lg{display:grid;place-items:center;width:48px;height:48px;border:2px dashed #fff9;border-radius:12px;font-size:10px;font-weight:600;flex:none}
+.brand small{flex:none;display:flex;align-items:center;height:48px;width:176px;text-transform:uppercase;font-weight:600;font-size:10px;letter-spacing:.03em;line-height:1.25;white-space:normal}
+.sp{flex:1}
+.logos{display:flex;flex-direction:column;align-items:center;gap:8px}
+aside.open .logos,aside:has(:focus-visible) .logos{flex-direction:row;justify-content:center}
+@media(hover:hover){aside:hover .logos{flex-direction:row;justify-content:center}}
+.logos .lu{width:48px;height:48px;border-radius:50%;background:#ffffff22;display:grid;place-items:center;font-size:10px;font-weight:700;flex:none;overflow:hidden}.lu img,.lg img{width:100%;height:100%;object-fit:contain}.ft>*{grid-area:1/1}.ft img{width:50%;height:auto;max-height:70%;object-fit:contain}
+main{margin-left:64px;padding:22px clamp(14px,3vw,52px) 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.crumb{font-weight:700;font-size:clamp(17px,2vw,30px)}.crumb a{cursor:pointer}.crumb a:hover{text-decoration:underline}
+.tools{display:flex;gap:10px}
+.ib{position:relative;width:42px;height:42px;border-radius:50%;border:1px solid var(--ln);background:var(--card);color:var(--tx);display:grid;place-items:center}
+.dot{position:absolute;top:7px;right:9px;width:10px;height:10px;border-radius:50%;background:#ff3b30}
+.hint{color:var(--mut);font-size:13.5px;margin:0 0 6px}
+.folders{display:flex;flex-wrap:wrap;gap:34px 20px;justify-content:space-evenly;padding:clamp(24px,9vh,110px) 0}
+.fb{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--tx);font-weight:700;font-size:clamp(15px,1.4vw,24px);transition:transform .45s}
+.fb small{font-weight:400;color:var(--mut)}
+.fb.open{transform:scale(1.18)}
+.fold{position:relative;width:clamp(150px,17vw,320px);aspect-ratio:8/7;perspective:700px;margin-bottom:6px}
+.fold i{position:absolute;display:block}
+.bk{inset:11% 0 0 0;background:var(--d);border-radius:10px}
+.bk:before{content:"";position:absolute;left:0;top:-10%;width:38%;height:13%;background:var(--d);border-radius:8px 8px 0 0}
+.pp{left:8%;right:8%;top:17%;bottom:9%;background:#fff;border-radius:4px;box-shadow:0 -5px 0 -1px #e9e9e9;transition:transform .45s}
+.fold .ft{inset:27% 0 0 0;background:var(--c);border-radius:10px;transform-origin:bottom;transition:transform .45s;display:grid;place-items:center;color:var(--d);box-shadow:0 3px 8px #0003}
+.fb:hover .ft,.fb:focus-visible .ft,.fb.open .ft{transform:rotateX(-38deg)}
+.fb:hover .pp,.fb:focus-visible .pp,.fb.open .pp{transform:translateY(-14%)}
+.ft svg{width:34%;height:auto}
+.srch{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+input,select,textarea{padding:10px 12px;border:1.5px solid var(--tx);border-radius:12px;background:var(--card);color:var(--tx);min-width:0}
+.srch input{flex:1 1 150px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;width:100%;min-height:7.4em;margin-bottom:12px;padding:clamp(14px,1.2vw,22px) clamp(18px,1.6vw,28px);border:0;border-radius:16px;background:var(--c);color:#1f2d33;text-align:left;transition:transform .15s,box-shadow .15s}
+button.row:hover{transform:translateX(4px);box-shadow:0 4px 14px #0003}
+.row .k{font-size:clamp(22px,1.8vw,30px);font-weight:700;width:clamp(34px,2.6vw,44px)}
+.row .n{font-weight:700;font-size:clamp(15px,1.5vw,23px);flex:1 1 220px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row small{display:block;font-weight:400;font-size:max(12.5px,.62em);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row small:before{content:"• "}
+.row .d{font-size:clamp(13px,1.1vw,17px);font-weight:600}
+#lst{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,540px),1fr));gap:12px 16px}#lst .row{margin:0}#lst .empty{grid-column:1/-1}
+.chip{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.st-activo{background:#cdeed9;color:#14532d}.st-archivado{background:#f6caca;color:#7f1d1d}.st-papelera{background:#e3e3e3;color:#333}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-bottom:14px}
+.det{background:var(--c);color:#1f2d33;border-radius:20px;padding:clamp(18px,2vw,36px);font-size:clamp(15px,1.15vw,19px);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:clamp(16px,1.6vw,28px) clamp(18px,2vw,34px)}
+.det h4{margin:0 0 3px;font-size:1.1em}.det .w{grid-column:1/-1}
+.det textarea,.det select,.det input{width:100%;background:#fffa;border-color:#1f2d33;color:#1f2d33}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.btn{border:0;border-radius:12px;padding:12px 22px;font-weight:700;background:#1f2d33;color:#fff}
+.btn.g{background:#1f8a4c}.det{position:relative}.det>div:first-of-type{padding-right:50px}.tr{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:#ffffffb0;color:#1f2d33;display:grid;place-items:center}.tr:hover{background:#b4332b;color:#fff}
+.btn.s{background:#fff9;color:#1f2d33}.btn.r{background:#b4332b}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:clamp(18px,1.6vw,28px);margin-bottom:16px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0 16px}
+@media(min-width:900px){.f2{grid-column:span 2}}
+.card h3{margin:0 0 6px}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.5vw,24px);margin-bottom:16px}.duo .card{margin:0;min-height:clamp(200px,30vh,320px);padding:clamp(14px,1.4vw,24px)}.duo .ln{flex-direction:column;align-items:stretch}.duo .btn{padding:8px 10px;font-size:13px}
+.bx{position:relative;display:flex}.bx .card{flex:1;min-width:0;overflow-y:auto;max-height:clamp(280px,52vh,560px)}
+.bd{position:absolute;top:-9px;right:-6px;z-index:1;min-width:28px;height:28px;padding:0 8px;border-radius:14px;background:#ff3b30;color:#fff;font:700 13px/24px Lexend,system-ui,sans-serif;text-align:center;border:2px solid var(--bg);font-style:normal}
+.bd.z{background:#7a8a90}.bd.t{background:var(--side2)}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 4px}
+.card input,.card select,dialog input,dialog select,dialog textarea{width:100%}
+.ln{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.ln small{color:var(--mut)}
+dialog{border:0;border-radius:18px;padding:20px;width:min(560px,92vw);background:var(--card);color:var(--tx)}
+dialog::backdrop{background:#0008}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1f2d33;color:#fff;padding:10px 18px;border-radius:99px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9;border:1px solid #fff4}
+.toast.on{opacity:1}
+.empty{text-align:center;color:var(--mut);padding:40px 10px}
+.lt{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:700;font-size:.95em}
+.pill{display:block;background:#d9d9d9;border:2px solid #1f2d33;border-radius:10px;padding:4px 14px;font-weight:500;font-size:.85em;letter-spacing:.02em}
+.srch{align-items:flex-end}.sl{display:flex;flex-direction:column;gap:2px;font-size:13px;font-weight:600;margin:0;flex:0 1 190px}.sl select{width:100%}
+.btn.bl{background:#1f6fb5;display:inline-flex;align-items:center;gap:8px}
+.bg{display:flex;align-items:flex-end}.bg .btn{width:100%;justify-content:center}
+.pill{white-space:nowrap}.lt{flex:none}
+.meta .chip{font-size:13px;padding:3px 12px}.cr{background:var(--c);border:1.5px solid var(--d);color:#1f2d33}.ct{background:#dde7ea;color:#1f2d33}
+.nh{display:flex;align-items:center;gap:10px;min-width:0}.nt{overflow:hidden;text-overflow:ellipsis;min-width:0}.nh .chip{flex:none}
+.pick{max-height:230px;overflow-y:auto;border:1.5px solid var(--ln);border-radius:12px;margin-top:6px}.pick .hint{padding:10px 12px;margin:0}
+.pk{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-bottom:1px solid var(--ln);background:var(--card);color:var(--tx);text-align:left}.pk:last-child{border-bottom:0}.pk.on{outline:3px solid #1f8a4c;outline-offset:-3px}.pk small{display:block;color:var(--mut);font-size:12.5px}
+.dt{flex:none;width:16px;height:16px;border-radius:50%;background:var(--c);border:2px solid var(--d);display:inline-block}
+.duo .ln{margin-top:12px}.duo .ln small{line-height:1.5}
+.eps{display:none;flex:none;width:176px;font-size:10px;line-height:1.3;font-weight:400}
+aside.open .eps,aside:has(:focus-visible) .eps{display:block}
+@media(hover:hover){aside:hover .eps{display:block}}
+:focus-visible{outline:3px solid #ffb703;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<aside id="sd">
+ <button class="nv" onclick="goBack()" aria-label="Regresar"><span data-i="back"></span><span class="lb">Regresar</span></button>
+ <!-- Logo del sistema: archivo logo-sigej.png -->
+ <button class="brand" aria-label="SIGEJ" onclick="sd.classList.toggle('open')"><span class="lg"><img src="logo-sigej.png" alt="" onload="this.nextElementSibling.hidden=true;this.parentNode.style.border='0'" onerror="this.remove()"><span>LOGO</span></span><small>Sistema de Información y Gestión de Expedientes Judiciales</small></button>
+ <button class="nv add" onclick="openAdd()" aria-label="Añadir expediente"><span data-i="plus"></span><span class="lb">Añadir Expediente</span></button>
+ <nav id="nav"></nav>
+ <div class="sp"></div>
+ <!-- Imágenes (misma carpeta que index.html): logo-sigej.png (arriba), logo-usac.png (abajo). Si el archivo no existe se muestra el recuadro de relleno. -->
+ <div class="logos"><span class="lu"><img src="logo-usac.png" alt="USAC" onload="this.nextElementSibling.hidden=true;this.parentNode.style.background='none'" onerror="this.remove()"><span>USAC</span></span><small class="eps">Sistema creado como proyecto de Ejercicio Profesional Supervisado (EPS) de la USAC. No es un sistema oficial del Organismo Judicial.</small></div>
+</aside>
+<main>
+ <div class="top"><div class="crumb" id="crumb"></div>
+  <div class="tools"><button class="ib" id="bell" onclick="go('prestamo')" aria-label="Envíos pendientes de devolución"></button><button class="ib" aria-label="Usuario" title="Usuario (inicio de sesión pendiente)" data-i="user"></button></div></div>
+ <div id="main"></div>
+</main>
+<dialog id="dlg">
+ <h3 style="margin:0">Añadir expediente</h3>
+ <p class="hint">Registre solo datos no privados. Evite DPI, domicilios, teléfonos y hechos sensibles.</p>
+ <label>Número de expediente</label><input id="an" placeholder="01133-2026-155 (123-2026)">
+ <label>Rama</label><select id="at" onchange="fillAt()"><option value="civil">Civil</option><option value="familiar">Familiar</option><option value="penal">Penal</option><option value="exhib">Exhibiciones</option></select>
+ <label>Tipo de expediente</label><select id="atp"></select>
+ <label>Fecha de recepción</label><input id="af" type="date">
+ <label>Demandante / denunciante / agraviado</label><input id="aa">
+ <label>Demandado / denunciado / sindicado</label><input id="ab">
+ <label>Encargado</label><input id="ae" placeholder="Secretaría">
+ <label>Número de folios</label><input id="afo" type="number" min="0" value="0">
+ <label>Descripción breve</label><textarea id="ad" rows="3"></textarea>
+ <div class="acts" style="margin-top:16px"><button class="btn" onclick="addExp()">Guardar expediente</button><button class="btn s" style="background:var(--ln);color:var(--tx)" onclick="dlg.close()">Cancelar</button></div>
+</dialog>
+<dialog id="cf"><h3 id="cft" style="margin:0 0 6px"></h3><p class="hint" id="cfm"></p>
+ <div class="acts" style="margin-top:14px"><button class="btn r" id="cfy"></button><button class="btn s" style="background:var(--ln);color:var(--tx)" onclick="cf.close()">Cancelar</button></div></dialog>
+<dialog id="dv"><h3 style="margin:0 0 6px">Registrar devolución</h3><p class="hint" id="dvm"></p>
+ <label>Folios recibidos</label><input id="dvf" type="number" min="0">
+ <div class="acts" style="margin-top:14px"><button class="btn g" id="dvy">Confirmar devolución</button><button class="btn s" style="background:var(--ln);color:var(--tx)" onclick="dv.close()">Cancelar</button></div></dialog>
+<div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),sd=$('#sd'),dlg=$('#dlg'),cf=$('#cf'),dv=$('#dv');
+const P={search:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.5-4.5',pen:'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',back:'M19 12H5M12 19l-7-7 7-7',plus:'M12 5v14M5 12h14',folder:'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',archive:'M3 4h18v4H3zM5 8v12h14V8M10 12h4',send:'M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z',trash:'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',bell:'M6 16v-5a6 6 0 0 1 12 0v5l2 2H4zM10 21h4',user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0',scale:'M12 4v16M7 20h10M4 7h16M4 7l-3 7a3.5 3.5 0 0 0 6 0zM20 7l-3 7a3.5 3.5 0 0 0 6 0z',home:'M3 11l9-8 9 8M5 9.5V21h14V9.5M9 21v-6h6v6',shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'};
+const ic=(n,s=24)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${P[n]}"/></svg>`;
+const TIPOS={civil:{n:'Civil',a:['Demandante','Demandado'],i:'scale'},familiar:{n:'Familiar',a:['Solicitante','Parte contraria'],i:'home'},penal:{n:'Penal',a:['Agraviado','Sindicado'],i:'shield'},exhib:{n:'Exhibiciones',a:['Solicitante','Autoridad requerida'],i:'pen'}};
+// Tipos de expediente por rama (ejemplos: edite aquí los nombres reales)
+const TP={civil:['Sumario','Oral','Ejecutivo','Diligencias voluntarias'],familiar:['Medidas de seguridad','Pensión alimenticia','Violencia intrafamiliar'],penal:['Falta','Juicio de faltas','Diligencias'],exhib:['Exhibición personal']};
+const ST={activo:'En trámite',archivado:'Archivado',papelera:'Papelera'};
+const NAV=[['buscar','Buscar expediente','search'],['activos','Expedientes en Trámite','folder'],['archivados','Expedientes Archivados','archive'],['prestamo','Enviar expediente','send'],['papelera','Papelera','trash']];
+const BASE={buscar:'Buscar expediente',activos:'Expedientes en Trámite',archivados:'Expedientes Archivados',prestamo:'Enviar expediente',papelera:'Papelera'};
+const HOLD=['Secretaría','Oficial I','Oficial II','Notificador','Comisario','Juez de Paz','Archivo'];
+const D='Descripción breve del asunto (sin datos sensibles).';
+const raw=[
+['01133-2026-154 (122-2026)','civil','2026-10-04','Juan Pérez López','María José Curup','Secretaría','Notificador','Crear decretos',D],
+['01133-2026-094 (108-2026)','civil','2026-09-29','Rosa Elena Tzoc','Luis Alberto Mejía','Oficial I','Oficial I','Pendiente de audiencia',D],
+['01133-2026-024 (054-2026)','civil','2026-09-27','Carlos Hernández','Ana Lucía Pop','Oficial II','Oficial II','Notificar a las partes',D],
+['01133-2026-176 (174-2026)','civil','2026-09-16','Marta Sic','Pedro Ajú','Secretaría','Secretaría','',D],
+['01133-2026-160 (130-2026)','familiar','2026-10-02','Silvia Xicay','Jorge Tun','Juez de Paz','Juez de Paz','Revisar medidas de seguridad',D],
+['01133-2026-141 (118-2026)','familiar','2026-09-24','Elena Cux','Mario Batz','Oficial I','Comisario','Trasladar al Ministerio Público',D],
+['01133-2026-171 (150-2026)','penal','2026-10-01','Lucía Morales','Sergio Pacheco','Oficial II','Oficial II','',D],
+['01133-2026-188 (140-2026)','exhib','2026-10-03','Ana Gómez','Autoridad requerida','Juez de Paz','Juez de Paz','Urgente',D],
+['01133-2026-120 (097-2026)','penal','2026-09-10','Raúl Ixcoy','Hugo Chávez','Secretaría','Archivo','Resuelto',D,'archivado'],
+['01133-2025-310 (402-2025)','civil','2025-11-18','Teresa Lux','Andrés Gómez','Secretaría','Archivo','Resuelto',D,'archivado'],
+['01133-2026-005 (010-2026)','penal','2026-08-12','Registro','duplicado','Secretaría','Secretaría','Ingresado por error',D,'papelera']];
+let E=raw.map((r,i)=>({id:i+1,num:r[0],t:r[1],tp:TP[r[1]][i%TP[r[1]].length],fo:20+(i*13)%70,f:r[2],a:r[3],b:r[4],enc:r[5],tiene:r[6],nota:r[7],desc:r[8],st:r[9]||'activo'}));
+let L=[{id:1,eid:3,quien:'Oficial II',motivo:'Necesita notificar',f:'2026-10-02',fe:46,dev:''},{id:2,eid:2,quien:'Notificador',motivo:'Notificar a las partes',f:'2026-09-30',fe:33,fr:35,dev:'2026-10-02'}];
+try{const s=JSON.parse(localStorage.getItem('sigej1'));if(s&&s.E){E=s.E;L=s.L}}catch(e){}
+E.forEach(e=>{if(e.tiene=='Archivo del Juzgado')e.tiene='Archivo';if(e.fo==null)e.fo=0;if(e.t=='intra')e.t='familiar';if(!e.tp)e.tp=(TP[e.t]||[''])[0]});
+const save=()=>{try{localStorage.setItem('sigej1',JSON.stringify({E,L}))}catch(e){}};
+const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=d=>d?d.split('-').reverse().join('/'):'';
+const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const get=id=>E.find(e=>e.id==id);
+let S={view:'activos',cat:null,sel:null,pre:null,edit:null,b:{r:'',tp:'',by:'',v:'',go:false},env:{r:'',id:null,q:''},q:{tp:'',by:'',v:''}};
+function toast(t){const x=$('#toast');x.textContent=t;x.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>x.classList.remove('on'),2200)}
+function go(k){if(k=='buscar'&&S.view!='buscar')S.b={r:'',tp:'',by:'',v:'',go:false};if(k=='prestamo'&&S.view!='prestamo')S.env={r:'',id:null,q:''};S.view=k;S.cat=null;S.sel=null;S.q={tp:'',by:'',v:''};S.qa=null;sd.classList.remove('open');render()}
+function goBack(){sd.classList.remove('open');if(S.sel!=null)S.sel=null;else if(S.cat)S.cat=null;else return;render()}
+function openF(el,k){el.classList.add('open');setTimeout(()=>{S.cat=k;S.q={tp:'',by:'',v:''};S.qa=null;render()},reduced?0:450)}
+function setSt(id,st){const e=get(id);if(st=='papelera')e.prev=e.st;e.st=st;if(st=='archivado')e.tiene='Archivo';save();toast({archivado:'Expediente archivado',activo:'Expediente en trámite',papelera:'Enviado a la papelera'}[st]);S.sel=null;render()}
+function ask(t,m,ok,fn,c){$('#cft').textContent=t;$('#cfm').textContent=m;const y=$('#cfy');y.className='btn '+(c||'r');y.textContent=ok;y.onclick=()=>{cf.close();fn()};cf.showModal()}
+function del(id){E=E.filter(e=>e.id!=id);L=L.filter(l=>l.eid!=id);save();render();toast('Expediente eliminado')}
+function delAsk(id){ask('¿Eliminar definitivamente?','Esta acción no se puede deshacer.','Eliminar',()=>del(id))}
+function trashAsk(id){const e=get(id);ask('¿Enviar a la papelera?','Expediente '+e.num+'. Podrá restaurarlo después desde la papelera.','Enviar a papelera',()=>setSt(id,'papelera'))}
+function saveEdit(id){const e=get(id),a=$('#ed-a').value.trim();if(!a){toast('El primer campo no puede quedar vacío');return}
+ e.a=a;e.b=$('#ed-b').value.trim()||'—';e.enc=$('#ed-enc').value.trim()||'Secretaría';e.desc=$('#ed-desc').value.trim()||'—';e.nota=$('#ed-nota').value.trim();e.tiene=$('#ed-tiene').value;e.fo=+$('#ed-fo').value||0;S.edit=null;save();toast('Cambios guardados');render()}
+function doSend(eid,q,fn,mot,f){const e=get(eid);L.push({id:Date.now(),eid,quien:q,motivo:mot,f:f||today(),fe:fn,dev:''});e.tiene=q;e.fo=fn;S.env={r:'',id:null,q:''};save();render();toast('Expediente enviado')}
+function addLoan(){const eid=S.env.id,q=$('#pq').value.trim(),fn=$('#pn').value;
+ if(!S.env.r||!eid){toast('Seleccione la rama y el expediente');return}
+ if(!q){toast('Escriba a quién se envía');return}
+ if(fn===''||+fn<0){toast('Indique el número de folios');return}
+ const e=get(eid),mot=$('#pm').value.trim(),f=$('#pf').value;
+ ask('¿Enviar este expediente?','Expediente '+e.num+' · se enviará a '+q+' con '+fn+' folios'+(mot?'. Motivo: '+mot:'')+'.','Enviar',()=>doSend(eid,q,+fn,mot,f),'g')}
+function drawPick(){const v=S.env,box=$('#pick');$('#eq').disabled=!v.r;
+ if(!v.r){box.innerHTML='<p class="hint">Seleccione primero la rama.</p>';return}
+ const sent=new Set(L.filter(l=>!l.dev).map(l=>l.eid)),sl=v.id?get(v.id):null;
+ const r=E.filter(e=>e.st!='papelera'&&e.t==v.r&&!sent.has(e.id)&&match(e,'',v.q)).sort((x,y)=>y.f.localeCompare(x.f));
+ box.innerHTML=(sl?`<p class="hint"><b>Seleccionado:</b> ${esc(sl.num)}</p>`:'')+`<div class="pick">`+(r.map(e=>`<button type="button" class="pk ${v.id==e.id?'on':''}" onclick="pickE(${e.id})"><i class="dt ${e.t}"></i><span>${esc(e.num)}<small>${esc(e.a)} en contra de ${esc(e.b)} · ${ST[e.st]}</small></span></button>`).join('')||'<p class="hint">No hay expedientes disponibles para enviar.</p>')+`</div>`}
+function pickE(id){S.env.id=id;fillFo();drawPick()}
+function initE(){$('#er').value=S.env.r;$('#eq').value=S.env.q;drawPick();fillFo()}
+function fillFo(){const e=S.env.id?get(S.env.id):null;$('#pn').value=e?(e.fo||0):''}
+function devolver(id){const l=L.find(x=>x.id==id),e=get(l.eid),fe=l.fe??e.fo??0;$('#dvm').textContent='Expediente '+e.num+' · enviado a '+l.quien+' con '+fe+' folios.';$('#dvf').value=fe;
+ $('#dvy').onclick=()=>{const v=$('#dvf').value;if(v===''){toast('Indique los folios recibidos');return}l.fr=+v;l.dev=today();e.fo=+v;e.tiene=e.st=='archivado'?'Archivo':'Secretaría';dv.close();save();render();toast('Devolución registrada')};dv.showModal()}
+function fillAt(){$('#atp').innerHTML=TP[$('#at').value].map(t=>`<option>${t}</option>`).join('')}
+function openAdd(){fillAt();sd.classList.remove('open');$('#af').value=today();dlg.showModal()}
+function addExp(){const n=$('#an').value.trim(),a=$('#aa').value.trim();if(!n||!a){toast('Falta número o demandante');return}
+ const t=$('#at').value;E.push({id:Date.now(),num:n,t,tp:$('#atp').value,fo:+$('#afo').value||0,f:$('#af').value||today(),a,b:$('#ab').value.trim()||'—',enc:$('#ae').value.trim()||'Secretaría',tiene:'Secretaría',nota:'',desc:$('#ad').value.trim()||'—',st:'activo'});
+ save();dlg.close();$('#afo').value=0;['an','aa','ab','ae','ad'].forEach(i=>$('#'+i).value='');S={...S,view:'activos',cat:t,sel:null,edit:null,qa:null,q:{tp:'',by:'',v:''}};render();toast('Expediente añadido')}
+function match(e,by,v){v=v.trim().toLowerCase();if(!v)return true;const nm=(e.a+' '+e.b).toLowerCase(),n=e.num.toLowerCase(),y=e.num.includes('-'+v+'-')||e.f.startsWith(v);return by=='n'?n.includes(v):by=='m'?nm.includes(v):by=='a'?y:(n.includes(v)||nm.includes(v)||y)}
+const PH={'':'Número, nombre o año',n:'Ej. 01133-2026-199',m:'Ej. Juan Pérez',a:'Ej. 2026'};const setPh=(id,b)=>{$('#'+id).placeholder=PH[b||'']};
+const SEL=(o,v)=>o.map(([k,t])=>`<option value="${k}" ${v==k?'selected':''}>${t}</option>`).join('');
+function rowH(e,i,x){return `<button class="row ${e.t}" onclick="S.sel=${e.id};render()"><span class="k">${i+1})</span><span class="n"><span class="nh"><span class="nt">${esc(e.num)}</span>${x?`<span class="chip st-${e.st}">${ST[e.st]}</span>`:''}</span><small>${esc(e.a)} en contra de ${esc(e.b)}</small><small>${fmt(e.f)}</small><small>${esc(e.tp)}</small></span><span class="lt">Lo tiene:<b class="pill">${esc(e.tiene.toUpperCase())}</b></span></button>`}
+function applyQ(){S.qa={...S.q};drawList()}
+function drawList(){const st=S.view=='activos'?'activo':'archivado',q=S.qa||{tp:'',by:'',v:''};
+ const r=E.filter(e=>e.st==st&&e.t==S.cat&&(!q.tp||e.tp==q.tp)&&match(e,q.by,q.v)).sort((x,y)=>y.f.localeCompare(x.f));
+ $('#lst').innerHTML=r.length?r.map((e,i)=>rowH(e,i)).join(''):'<div class="empty">No hay expedientes que coincidan.</div>'}
+function buscar(){return `<div class="card"><div class="fg"><div><label>Rama</label><select id="br" onchange="S.b.r=this.value;S.b.tp='';fillBt()"><option value="">Sin seleccionar</option>${SEL(Object.keys(TIPOS).map(k=>[k,TIPOS[k].n]),S.b.r)}</select></div><div><label>Tipo de expediente</label><select id="bt" onchange="S.b.tp=this.value"></select></div><div><label>Buscar por</label><select id="bb" onchange="S.b.by=this.value;setPh('bv',this.value)"><option value="">Sin seleccionar</option>${SEL([['n','Número'],['m','Nombre'],['a','Año']],S.b.by)}</select></div><div><label>Número, nombre o año</label><input id="bv" placeholder="${PH[S.b.by||'']}" value="${esc(S.b.v)}" oninput="S.b.v=this.value" onkeydown="if(event.key=='Enter')doBuscar()"></div><div class="bg"><button class="btn bl" onclick="doBuscar()">${ic('search')} BUSCAR</button></div></div></div><div id="lst"></div>`}
+function fillBt(){const b=S.b,o=b.r?TP[b.r].map(t=>`<option>${t}</option>`).join(''):Object.keys(TP).map(k=>`<optgroup label="${TIPOS[k].n}">${TP[k].map(t=>`<option>${t}</option>`).join('')}</optgroup>`).join('');$('#bt').innerHTML='<option value="">Sin seleccionar</option>'+o;$('#bt').value=b.tp}
+function initB(){const b=S.b;$('#br').value=b.r;fillBt();$('#bb').value=b.by;if(b.go)drawRes();else $('#lst').innerHTML='<div class="empty">Elija uno o más criterios (no es necesario llenarlos todos) y pulse BUSCAR.</div>'}
+function doBuscar(){S.b.go=true;drawRes()}
+function drawRes(){const b=S.b,r=E.filter(e=>e.st!='papelera'&&(!b.r||e.t==b.r)&&(!b.tp||e.tp==b.tp)&&match(e,b.by,b.v)).sort((x,y)=>y.f.localeCompare(x.f));
+ $('#lst').innerHTML=r.length?`<p class="hint" style="grid-column:1/-1">${r.length} resultado${r.length==1?'':'s'}</p>`+r.map((e,i)=>rowH(e,i,1)).join(''):'<div class="empty">No se encontraron expedientes con esos criterios.</div>'}
+function detail(e){const T=TIPOS[e.t],ed=S.edit==e.id&&e.st=='activo',hs=HOLD.includes(e.tiene)?HOLD:[e.tiene,...HOLD];
+ const v=(k,l,val)=>`<div><h4>${l}:</h4>${ed?`<input id="ed-${k}" value="${esc(val)}">`:esc(val)}</div>`;
+ let acts;
+ if(ed)acts=`<button class="btn g" onclick="saveEdit(${e.id})">Guardar cambios</button><button class="btn r" onclick="S.edit=null;render();toast('Cambios cancelados')">Cancelar</button>`;
+ else if(e.st=='activo')acts=`<button class="btn" onclick="setSt(${e.id},'archivado')">ARCHIVAR</button><button class="btn s" onclick="S.edit=${e.id};render()">Editar</button>`;
+ else acts=`<button class="btn" onclick="setSt(${e.id},'activo')">DESARCHIVAR</button>`;
+ return `<div class="meta"><span>Recepción: <b>${fmt(e.f)}</b></span><span>Estado: <span class="chip st-${e.st}">${ST[e.st]}</span></span><span>Rama: <span class="chip cr ${e.t}">${T.n}</span></span><span>Tipo: <span class="chip ct">${esc(e.tp)}</span></span></div>
+<div class="det ${e.t}"><button class="tr" onclick="trashAsk(${e.id})" aria-label="Enviar a la papelera" title="Enviar a la papelera">${ic('trash')}</button>
+${v('a',T.a[0],e.a)}${v('b',T.a[1],e.b)}${v('enc','Encargado',e.enc)}<div><h4>Folios:</h4>${ed?`<input id="ed-fo" type="number" min="0" value="${e.fo||0}">`:esc(e.fo||'—')}</div>
+<div class="w"><h4>Descripción:</h4>${ed?`<textarea id="ed-desc" rows="4">${esc(e.desc)}</textarea>`:esc(e.desc)}</div>
+<div class="w"><h4>Notas:</h4>${ed?`<textarea id="ed-nota" rows="2">${esc(e.nota)}</textarea>`:(esc(e.nota)||'—')}</div>
+<div class="w"><h4>Quién lo tiene ahora:</h4>${ed?`<select id="ed-tiene">${hs.map(h=>`<option ${h==e.tiene?'selected':''}>${esc(h)}</option>`).join('')}</select>`:esc(e.tiene)}</div>
+<div class="w acts">${acts}</div></div>`}
+function folders(st){return `<p class="hint">Elija una categoría para ver sus expedientes.</p><div class="folders">`+Object.keys(TIPOS).map(k=>{const n=E.filter(e=>e.t==k&&e.st==st).length;
+ return `<button class="fb ${k}" onclick="openF(this,'${k}')"><div class="fold"><i class="bk"></i><i class="pp"></i><i class="ft"><img src="icono-${k=='exhib'?'exhibiciones':k}.png" alt="" onload="this.nextElementSibling.style.display='none'" onerror="this.remove()">${ic(TIPOS[k].i,46)}</i></div><span>${TIPOS[k].n.toUpperCase()}</span><small>${n} expediente${n==1?'':'s'}</small></button>`}).join('')+'</div>'}
+const ago=f=>{const d=Math.floor((Date.now()-new Date(f+'T00:00'))/864e5);return d<=0?'hoy':d==1?'hace 1 día':'hace '+d+' días'};
+function loans(){
+ const act=L.filter(l=>!l.dev).sort((x,y)=>y.f.localeCompare(x.f)),his=L.filter(l=>l.dev).sort((x,y)=>y.dev.localeCompare(x.dev)),nm=l=>esc(get(l.eid)?.num||'—');
+ const df=l=>{if(l.fe==null||l.fr==null)return '';const d=l.fr-l.fe;return d==0?'<span class="chip st-activo">Folios completos</span>':`<span class="chip st-archivado">${d>0?'+':''}${d} folio${Math.abs(d)==1?'':'s'}</span>`};
+ const frm=`<div class="card"><h3>Registrar envío</h3><p class="hint">Anote a quién se envía el expediente, por qué y con cuántos folios. Al devolverse se registran los folios recibidos.</p>
+<div class="fg"><div><label>Rama</label><select id="er" onchange="S.env={r:this.value,id:null,q:''};$('#eq').value='';fillFo();drawPick()"><option value="">Sin seleccionar</option>${SEL(Object.keys(TIPOS).map(k=>[k,TIPOS[k].n]),S.env.r)}</select></div><div class="f2"><label>Expediente</label><input id="eq" placeholder="Buscar por número o nombre" oninput="S.env.q=this.value;drawPick()"><div id="pick"></div></div><div><label>Se envía a</label><input id="pq" list="dsts" placeholder="Ej. Notificador"></div><div><label>Motivo</label><input id="pm" list="mots" placeholder="Ej. Necesita notificar"></div><div><label>Folios enviados</label><input id="pn" type="number" min="0"></div><div><label>Fecha</label><input id="pf" type="date" value="${today()}"></div></div>
+<datalist id="dsts"><option>Notificador</option><option>Comisario</option><option>Ministerio Público</option><option>Juzgado de Primera Instancia</option><option>Sala de Apelaciones</option><option>Archivo</option></datalist><datalist id="mots"><option>Necesita notificar</option><option>Traslado al Ministerio Público</option><option>Remitir a otro juzgado</option><option>Elevar en apelación</option><option>Archivo definitivo</option></datalist>
+<div class="acts" style="margin-top:16px"><button class="btn g" onclick="addLoan()">Enviar</button></div></div>`;
+ return `<div class="duo"><div class="bx"><i class="bd ${act.length?'':'z'}">${act.length}</i><div class="card"><h3>Enviados recientemente</h3>${act.map(l=>`<div class="ln"><div><b>${nm(l)}</b><br><small>Enviado a <b>${esc(l.quien)}</b> · ${ago(l.f)}<br>Motivo: ${esc(l.motivo||'—')}<br>${l.fe??'—'} folios enviados</small></div><button class="btn" onclick="devolver(${l.id})">Registrar devolución</button></div>`).join('')||'<p class="hint">No hay envíos pendientes de devolución.</p>'}</div></div>
+<div class="bx"><i class="bd t">${his.length}</i><div class="card"><h3>Devueltos</h3>${his.map(l=>`<div class="ln"><div><b>${nm(l)}</b><br><small>De <b>${esc(l.quien)}</b> · devuelto ${fmt(l.dev)}<br>${l.fe??'—'} folios enviados → ${l.fr??'—'} recibidos</small></div>${df(l)}</div>`).join('')||'<p class="hint">Aún no hay devoluciones.</p>'}</div></div></div>`+frm}
+function papelera(){const r=E.filter(e=>e.st=='papelera');return `<p class="hint">Los expedientes enviados aquí pueden restaurarse o eliminarse definitivamente.</p>`+(r.map(e=>`<div class="row ${e.t}"><span class="n">${esc(e.num)}<small>${esc(e.a)} vs. ${esc(e.b)} · ${TIPOS[e.t].n}</small></span><button class="btn s" onclick="setSt(${e.id},'${e.prev||'activo'}')">Restaurar</button><button class="btn r" onclick="delAsk(${e.id})">Eliminar</button></div>`).join('')||'<div class="empty">La papelera está vacía.</div>')}
+function render(){
+ $('#nav').innerHTML=NAV.map(([k,t,i])=>`<button class="nv ${S.view==k?'on':''}" onclick="go('${k}')" aria-label="${t}">${ic(i)}<span class="lb">${t}</span></button>`).join('');
+ $('#bell').innerHTML=ic('bell')+(L.some(l=>!l.dev)?'<i class="dot"></i>':'');
+ if(S.sel==null)S.edit=null;
+ const v=S.view,sel=S.sel!=null?get(S.sel):null;
+ $('#crumb').innerHTML=`<a onclick="S.cat=null;S.sel=null;render()">${BASE[v]}</a>`+(S.cat?` / <a onclick="S.sel=null;render()">${TIPOS[S.cat].n}</a>`:'')+(sel?` / ${esc(sel.num)}`:'');
+ const m=$('#main');
+ if(v=='prestamo'){m.innerHTML=loans();initE()}
+ else if(v=='papelera')m.innerHTML=papelera();
+ else if(sel)m.innerHTML=detail(sel);
+ else if(v=='buscar'){m.innerHTML=buscar();initB()}
+ else if(S.cat){const q=S.q;m.innerHTML=`<div class="srch"><label class="sl"><span>Tipo:</span><select onchange="S.q.tp=this.value"><option value="">Todos</option>${TP[S.cat].map(t=>`<option ${q.tp==t?'selected':''}>${t}</option>`).join('')}</select></label><label class="sl"><span>Buscar:</span><select onchange="S.q.by=this.value;setPh('qv',this.value)"><option value="">Todo</option>${SEL([['n','Número'],['m','Nombre'],['a','Año']],q.by)}</select></label><input id="qv" placeholder="${PH[q.by||'']}" value="${esc(q.v)}" oninput="S.q.v=this.value" onkeydown="if(event.key=='Enter')applyQ()"><button class="btn bl" onclick="applyQ()">${ic('search')} BUSCAR</button></div><div id="lst"></div>`;drawList()}
+ else m.innerHTML=folders(v=='activos'?'activo':'archivado');
+ window.scrollTo(0,0)}
+document.querySelectorAll('[data-i]').forEach(e=>e.innerHTML=ic(e.dataset.i));
+document.addEventListener('click',e=>{if(!sd.contains(e.target))sd.classList.remove('open')});
+render();
+</script></body></html>
